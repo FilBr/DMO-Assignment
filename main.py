@@ -22,7 +22,7 @@ for instance_number in ['01', '02', '03', '04', '05', '06', '07', '08']:
     adj_mat = np.zeros(shape=(n, n), dtype=np.int16)
     with open(f"./instances/instance{instance_number}.stu", "r") as enrollments_file:
         enrollments_file.readline()
-        dataset = np.loadtxt(f, delimiter=" ", dtype=str)
+        dataset = np.loadtxt(enrollments_file, delimiter=" ", dtype=str)
     print("---Dataset created---")
 
     stud_per_exam = {}
@@ -35,7 +35,6 @@ for instance_number in ['01', '02', '03', '04', '05', '06', '07', '08']:
     for exam_list in stud_per_exam.values():
         for pair in itertools.combinations(exam_list, 2):
             adj_mat[pair[0]-1, pair[1]-1] += 1
-
     G = nx.from_numpy_matrix(adj_mat)
 
     with open(f"./instances/instance{instance_number}.slo", "r") as timeslots_file:
@@ -48,7 +47,7 @@ for instance_number in ['01', '02', '03', '04', '05', '06', '07', '08']:
     #best_num_col = max_col
     color_dict=greedy_color(G, strategy='smallest_last', interchange=True)
     num_col=len(set(color_dict.values()))
-    
+
     # if tmp_num_col <= best_num_col:
     #     best_strategy = strategy
     #     best_num_col = tmp_num_col
