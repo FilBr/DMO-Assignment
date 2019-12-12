@@ -47,6 +47,11 @@ for instance_number in ['01', '02', '03', '04', '05', '06', '07', '08']:
     #best_num_col = max_col
     color_dict=greedy_color(G, strategy='smallest_last', interchange=True)
     num_col=len(set(color_dict.values()))
+    
+    if num_col > max_col:
+        print("NUMBER OF TIMESLOTS EXCEEDED")
+    else:
+        print(f"Timeslots used: {num_col}\n")
 
     # if tmp_num_col <= best_num_col:
     #     best_strategy = strategy
