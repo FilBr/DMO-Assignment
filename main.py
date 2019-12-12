@@ -65,3 +65,4 @@ for instance_number in ['01', '02', '03', '04', '05', '06', '07', '08']:
     with open(f"./instances/instance{instance_number}.sol", "w+") as solution_file:
         for exam in color_dict:
             solution_file.write(f"{exam +1} {color_dict[exam] + 1}\n")
+
