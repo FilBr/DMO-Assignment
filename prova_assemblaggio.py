@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import networkx as nx
 from networkx.algorithms.coloring import greedy_color
 from itertools import combinations
+#prova adele
 
 def mapcount(filename):
     f = open(filename, "r+")
