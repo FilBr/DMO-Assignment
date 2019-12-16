@@ -1,3 +1,4 @@
+import numpy as np
 def obj_compare(encoding_matrix, adj_matrix, change_list, obj_matrix):
     # change_list è vettore di due elementi change_list[0] = exam changed, change_list[1] = time slot
     # obj_matrix è matrice con penalità x studenti
