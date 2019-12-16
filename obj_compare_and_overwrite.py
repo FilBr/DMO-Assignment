@@ -34,3 +34,26 @@ def overwrite(encoding_matrix, distance_matrix, obj_matrix, change_list, adj_mat
         obj_matrix[pair[0]] = distance_matrix[pair[0]] * adj_matrix[pair[0]]
         obj_matrix[:, pair[0]] = obj_matrix[pair[0]]
     return encoding_matrix, distance_matrix, obj_matrix
+
+## obj_matrix is a matrix nxn, where n is the number of exams
+## each element of the matrix is the penalty calculated between exam i and j, given they have students in common
+## The diagonal of the matrix is the penalty contribution of each exam
+
+def obj_matrix(distance_matrix, adj_matrix, tot_students):
+    n = len(distance_matrix)
+    obj_matrix = np.zeros((n, n))
+
+    ## Each element is the penalty contribution between exam i and j, 
+    ## diagonal is the sum of each row -> overall penalty contribution of an exam
+
+    for pos,row in enumerate(distance_matrix):
+        for elem in range(pos+1, n):
+            if elem != 0:
+                obj_matrix[pos][elem] = obj_function_eval(distance_matrix[pos][elem], adj_matrix[pos][elem])
+                obj_matrix[elem][pos] = obj_matrix[pos][elem]
+        obj_matrix[pos][pos] = np.sum(obj_matrix[pos])
+
+    return obj_matrix/(tot_students*2)
+
+def obj_function_eval(distance, common_students):
+    return (2**(5-distance))*common_students
