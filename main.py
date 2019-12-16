@@ -7,7 +7,10 @@ import networkx as nx
 from networkx.algorithms.coloring import greedy_color
 from itertools import combinations
 
+from initialization.encoding import encoding
 from initialization.mapcount import mapcount
+from neighborhood.mutation import mutation_exams
+from neighborhood.switch import switch_exams
 
 if __name__ == "__main__":
     for instance_number in ['01', '02', '03', '04', '05', '06', '07', '08']:
