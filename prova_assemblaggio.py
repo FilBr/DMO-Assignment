@@ -7,6 +7,7 @@ import networkx as nx
 from networkx.algorithms.coloring import greedy_color
 from itertools import combinations
 
+
 def mapcount(filename):
     f = open(filename, "r+")
     buf = mmap.mmap(f.fileno(), 0)
@@ -17,51 +18,54 @@ def mapcount(filename):
     f.close()
     return lines
 
-def encoding(adj_mat,color_dict):
+
+def encoding(adj_mat, color_dict):
     n = len(adj_mat)
-    encoding_matrix=np.zeros((n,n))
-    #matrice encoding
-    for i,mask in enumerate(adj_mat!=0):
+    encoding_matrix = np.zeros((n, n))
+    # matrice encoding
+    for i, mask in enumerate(adj_mat != 0):
+        ts = color_dict[i] + 1
+        encoding_matrix[:, i][mask] = ts
+        encoding_matrix[i][i] = ts
 
-        ts=color_dict[i]+1
-        encoding_matrix[:,i][mask]=ts
-        encoding_matrix[i][i]=ts
-
-    distance_matrix=np.zeros((n,n))
-    #matrice distanze
-    for i,row in enumerate(encoding_matrix):
-        x=abs(row-row[i])
-        mask=abs(row-row[i])>5
-        x[mask]=0
-        distance_matrix[i]=x
+    distance_matrix = np.zeros((n, n))
+    # matrice distanze
+    for i, row in enumerate(encoding_matrix):
+        x = abs(row - row[i])
+        mask = abs(row - row[i]) > 5
+        x[mask] = 0
+        distance_matrix[i] = x
     return encoding_matrix, distance_matrix
+
 
 def switch_exams(enc, index_pair):
     d = np.diag(enc)
     list_fs = []
     for pair in list(index_pair):
         if d[pair[0]] != d[pair[1]]:
-            #print(enc[pair[0], :], d[pair[1]])
-            p = (enc[pair[0],:] == d[pair[1]])
+            # print(enc[pair[0], :], d[pair[1]])
+            p = (enc[pair[0], :] == d[pair[1]])
             p1 = (enc[pair[1], :] == d[pair[0]])
-            if any(p)==False and any(p1) == False:
-                #list of feasible neighbour solution
+            if any(p) == False and any(p1) == False:
+                # list of feasible neighbour solution
                 dd = d.copy()
                 dd[[pair[0], pair[1]]] = dd[[pair[1], pair[0]]]
                 list_fs.append(dd)
     return list_fs
 
+
 def mutation_exams(enc, time_slot, n):
     d = np.diag(enc)
     list_fs = []
     for i in range(n):
-        diff = np.setdiff1d(range(1, time_slot+1), enc[i,:])
-        if len(diff>0):
+        diff = np.setdiff1d(range(1, time_slot + 1), enc[i, :])
+        if len(diff > 0):
             diff = min(diff)
             dd = d.copy()
             dd[i] = diff
             list_fs.append(dd)
     return list_fs
+
 
 if __name__ == "__main__":
     for instance_number in ['01', '02', '03', '04', '05', '06', '07', '08']:
@@ -117,6 +121,6 @@ if __name__ == "__main__":
         encoding_matrix, distance_matrix = encoding(adj_mat, color_dict)
         index_pair = combinations(range(n), 2)
         list_fs_sw = switch_exams(encoding_matrix, index_pair)
-        #print(list_fs_sw)
+        # print(list_fs_sw)
         list_fs_mut = mutation_exams(encoding_matrix, max_col, n)
-        #print(list_fs_mut)
+        # print(list_fs_mut)
