@@ -7,7 +7,6 @@ import networkx as nx
 from networkx.algorithms.coloring import greedy_color
 from itertools import combinations
 import random
-#prova
 from initialization.encoding import encoding
 from initialization.mapcount import mapcount
 from initialization.encoding import encoding
@@ -37,6 +36,7 @@ if __name__ == "__main__":
         for exam_list in stud_per_exam.values():
             for pair in itertools.combinations(exam_list, 2):
                 adj_mat[pair[0] - 1, pair[1] - 1] += 1
+                adj_mat[pair[1] - 1, pair[0] - 1] += 1
         G = nx.from_numpy_matrix(adj_mat)
 
         with open(f"./instances/instance{instance_number}.slo", "r") as timeslots_file:
