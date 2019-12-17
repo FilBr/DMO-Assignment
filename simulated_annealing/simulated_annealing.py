@@ -20,7 +20,7 @@ class Simulated_annealing:
     def solution_update(self, last_solution, new_solution):
         import random
         delta = new_solution - last_solution
-        if random.uniform(-10, 0) < delta / self.temp:
+        if random.uniform(-10, 0) < -delta / self.temp:
             x_new = new_solution
         else:
             x_new = last_solution
