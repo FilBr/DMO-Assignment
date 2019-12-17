@@ -7,6 +7,7 @@ import networkx as nx
 from networkx.algorithms.coloring import greedy_color
 from itertools import combinations
 import random
+
 from initialization.encoding import encoding
 from initialization.mapcount import mapcount
 from initialization.encoding import encoding
@@ -31,6 +32,7 @@ if __name__ == "__main__":
             if line[0] not in stud_per_exam:
                 stud_per_exam[line[0]] = []
             stud_per_exam[line[0]].append(int(line[1]))
+        num_students = len(stud_per_exam)
         print("---Dictionary created---")
 
         for exam_list in stud_per_exam.values():
@@ -74,3 +76,24 @@ if __name__ == "__main__":
         # print(list_fs_sw)
         list_fs_mut = mutation_exams(encoding_matrix, max_col, n)
         # print(list_fs_mut)
+
+        neighbourhood = list_fs_mut + list_fs_sw
+
+        ## calculate initial temp T0:
+        ## calculate avg of n% solutions in the neighbourhood, then calculate initial temp T0
+
+        penalties = obj_f.obj_matrix(distance_matrix, adj_mat, num_students)
+        #print(penalties)
+        nbhood_percent = int(0.2 * (len(list_fs_mut) + len(list_fs_sw)))
+        random_neighbours = random.sample(neighbourhood, nbhood_percent)
+
+        avg_penalty = 0
+        for sol in random_neighbours:
+            encoding_matrix, distance_matrix = encoding(adj_mat, sol)
+            penalty_matrix = obj_f.obj_matrix(distance_matrix, adj_mat, num_students)
+            curr_sol_penalty = sum(np.diag(penalty_matrix))
+            # print(f"penalty: {curr_sol_penalty}")
+            avg_penalty += curr_sol_penalty
+        avg_penalty /= len(random_neighbours)
+        print(f"average penalty: {avg_penalty}")
+        print(f"initial solution's penalty: {sum(np.diag(penalties))}")
