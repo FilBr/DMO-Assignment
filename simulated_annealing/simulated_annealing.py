@@ -1,24 +1,25 @@
 class Simulated_annealing:
 
-    def __init__(self, temp, decay, decay_time):
+    def __init__(self, temp, decay, max_n_iteration, hood_size, init_sol_val, avg_sol_val ):
         import numpy as np
-        self.temp = temp
+        self.temp = (avg_sol_val - init_sol_val) / 0.6931  # calculate the initial temperature
         self.counter = 0
-        self.decay = decay
-        self.weight = np.exp(-(1 / self.temp))
-        self.change_counter = 0
-        self.decay_time = decay_time
+        self.plateau_size = 15 * hood_size
+        self.plateau_counter = 0
+        self.alpha = 0.99
+        self.decay_time = max_n_iteration
 
     def temp_update(self):
-        if self.counter == decay_time:
-            self.temp = self.temp * self.decay
-            self.change_counter += 1
-            self.counter = 0
-            self.weight = self.weight ** (1 / self.decay)
+        if self.counter != self.decay_time & self.plateau_size != self.plateau_counter:
+            self.temp = self.temp * self.alpha ** self.counter
+            self.counter += 1
+            self.plateau_counter += 1
+        else:
+            self.plateau_counter = 0
 
-    def solution_update(self, sol_act, sol_new):
+    def solution_update(self, last_solution, new_solution):
         import random
-        delta = sol_new.value - sol_act
+        delta = new_solution.value - last_solution
         if random.uniform() < self.weight ** delta:
             x_new = sol_new
         else:

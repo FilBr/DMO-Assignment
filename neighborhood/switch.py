@@ -1,5 +1,6 @@
 import numpy as np
 
+
 def switch_exams(enc, index_pair):
     solution = np.diag(enc)
     feasible_solutions = []
