@@ -6,9 +6,14 @@ import matplotlib.pyplot as plt
 import networkx as nx
 from networkx.algorithms.coloring import greedy_color
 from itertools import combinations
+import random
 
 from initialization.encoding import encoding
 from initialization.mapcount import mapcount
+from initialization.encoding import encoding
+from neighborhood.mutation import mutation_exams
+from neighborhood.switch import switch_exams
+import obj_compare_and_overwrite as obj_f
 from neighborhood.mutation import mutation_exams
 from neighborhood.switch import switch_exams
 
