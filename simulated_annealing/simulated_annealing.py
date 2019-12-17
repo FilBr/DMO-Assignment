@@ -1,6 +1,6 @@
 class Simulated_annealing:
 
-    def __init__(self, temp, decay, max_n_iteration, hood_size, init_sol_val, avg_sol_val ):
+    def __init__(self, temp, decay, max_n_iteration, hood_size, init_sol_val, avg_sol_val):
         import numpy as np
         self.temp = (avg_sol_val - init_sol_val) / 0.6931  # calculate the initial temperature
         self.counter = 0
@@ -19,9 +19,9 @@ class Simulated_annealing:
 
     def solution_update(self, last_solution, new_solution):
         import random
-        delta = new_solution.value - last_solution
-        if random.uniform() < self.weight ** delta:
-            x_new = sol_new
+        delta = new_solution - last_solution
+        if random.uniform(-10, 0) < delta / self.temp:
+            x_new = new_solution
         else:
-            x_new = sol_act
+            x_new = last_solution
         return x_new
