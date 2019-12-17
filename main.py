@@ -16,9 +16,10 @@ from neighborhood.switch import switch_exams
 import obj_compare_and_overwrite as obj_f
 from neighborhood.mutation import mutation_exams
 from neighborhood.switch import switch_exams
+from simulated_annealing.solution import Solution
 
 if __name__ == "__main__":
-    for instance_number in ['01', '02', '03', '04', '05', '06', '07', '08']:
+    for instance_number in ['01']:
         print(f"Instance {instance_number}")
         n = mapcount(f"./instances/instance{instance_number}.exm")
         adj_mat = np.zeros(shape=(n, n), dtype=np.int16)
@@ -43,19 +44,15 @@ if __name__ == "__main__":
 
         with open(f"./instances/instance{instance_number}.slo", "r") as timeslots_file:
             max_col = int(timeslots_file.readline())
-        print(f"Maximum number of colors is {max_col}")
-        # strategies=[]
-        # best_strategy = ""
-        # num_col=max_col+1
-        # best_col_dict={}
-        # best_num_col = max_col
+        print(f"Number of colors used: {max_col}")
+
         color_dict = greedy_color(G, strategy='smallest_last', interchange=True)
         num_col = len(set(color_dict.values()))
 
-        if num_col > max_col:
-            print("NUMBER OF TIMESLOTS EXCEEDED")
-        else:
-            print(f"Timeslots used: {num_col}\n")
+        # if num_col > max_col:
+        #     print("NUMBER OF TIMESLOTS EXCEEDED")
+        # else:
+        #     print(f"Timeslots used: {num_col}\n")
 
         # if tmp_num_col <= best_num_col:
         #     best_strategy = strategy
@@ -70,30 +67,34 @@ if __name__ == "__main__":
             for exam in color_dict:
                 solution_file.write(f"{exam + 1} {color_dict[exam] + 1}\n")
 
-        encoding_matrix, distance_matrix = encoding(adj_mat, color_dict)
-        index_pair = combinations(range(n), 2)
-        list_fs_sw = switch_exams(encoding_matrix, index_pair)
-        # print(list_fs_sw)
-        list_fs_mut = mutation_exams(encoding_matrix, max_col, n)
-        # print(list_fs_mut)
+        initial_solution = Solution(color_dict, adj_mat, max_col, num_students)
+        initial_solution.print_penalty()
+        initial_solution.avg_neighbourhood_penalty()
 
-        neighbourhood = list_fs_mut + list_fs_sw
+        # encoding_matrix, distance_matrix = encoding(adj_mat, color_dict)
+        # index_pair = combinations(range(n), 2)
+        # list_fs_sw = switch_exams(encoding_matrix, index_pair)
+        # # print(list_fs_sw)
+        # list_fs_mut = mutation_exams(encoding_matrix, max_col, n)
+        # # print(list_fs_mut)
+
+        # neighbourhood = list_fs_mut + list_fs_sw
 
         ## calculate initial temp T0:
         ## calculate avg of n% solutions in the neighbourhood, then calculate initial temp T0
 
-        penalties = obj_f.obj_matrix(distance_matrix, adj_mat, num_students)
-        #print(penalties)
-        nbhood_percent = int(0.2 * (len(list_fs_mut) + len(list_fs_sw)))
-        random_neighbours = random.sample(neighbourhood, nbhood_percent)
+        # penalties = obj_f.obj_matrix(distance_matrix, adj_mat, num_students)
+        # #print(penalties)
+        # nbhood_percent = int(0.2 * (len(list_fs_mut) + len(list_fs_sw)))
+        # random_neighbours = random.sample(neighbourhood, nbhood_percent)
 
-        avg_penalty = 0
-        for sol in random_neighbours:
-            encoding_matrix, distance_matrix = encoding(adj_mat, sol)
-            penalty_matrix = obj_f.obj_matrix(distance_matrix, adj_mat, num_students)
-            curr_sol_penalty = sum(np.diag(penalty_matrix))
-            # print(f"penalty: {curr_sol_penalty}")
-            avg_penalty += curr_sol_penalty
-        avg_penalty /= len(random_neighbours)
-        print(f"average penalty: {avg_penalty}")
-        print(f"initial solution's penalty: {sum(np.diag(penalties))}")
+        # avg_penalty = 0
+        # for sol in random_neighbours:
+        #     encoding_matrix, distance_matrix = encoding(adj_mat, sol)
+        #     penalty_matrix = obj_f.obj_matrix(distance_matrix, adj_mat, num_students)
+        #     curr_sol_penalty = sum(np.diag(penalty_matrix))
+        #     # print(f"penalty: {curr_sol_penalty}")
+        #     avg_penalty += curr_sol_penalty
+        # avg_penalty /= len(random_neighbours)
+        # print(f"average penalty: {avg_penalty}")
+        # print(f"initial solution's penalty: {sum(np.diag(penalties))}")
