@@ -9,7 +9,7 @@ class Simulated_annealing:
     def __init__(self, max_n_iteration, initial_solution):
         import numpy as np
         self.temp = (
-                            initial_solution.get_penalty() - initial_solution.avg_neighbourhood_penalty()) / 0.6931  # calculate the initial temperature
+                            -initial_solution.get_penalty() + initial_solution.avg_neighbourhood_penalty()) / 0.6931  # calculate the initial temperature
         self.counter = 0
         self.plateau_size = 15 * len(initial_solution.get_neighbours())
         self.plateau_counter = 0
@@ -22,7 +22,7 @@ class Simulated_annealing:
     def solution_update(self):
         import random
         new_solution = self.solution.get_random_neighbour()
-        delta = abs(new_solution.get_penalty() - self.solution.get_penalty())
+        delta = new_solution.get_penalty() - self.solution.get_penalty()
         if random.uniform(-10, 0) < -delta / self.temp:
             self.solution = new_solution
 

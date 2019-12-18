@@ -43,9 +43,9 @@ class Solution:
 
         avg_penalty = 0
         for sol in random_neighbours:
-            encoding_matrix, distance_matrix = self.encoding(self.adj_matrix, sol)
-            penalty_matrix = self.obj_matrix(self.distance_matrix, self.adj_matrix, self.tot_num_students)
-            curr_sol_penalty = sum(np.diag(penalty_matrix))
+            self.encoding_matrix, self.distance_matrix = self.encoding(self.adj_matrix, sol)
+            self.penalty_matrix = self.obj_matrix(self.distance_matrix, self.adj_matrix, self.tot_num_students)
+            curr_sol_penalty = sum(np.diag(self.penalty_matrix))
             # print(f"penalty: {curr_sol_penalty}")
             avg_penalty += curr_sol_penalty
         avg_penalty /= len(random_neighbours)
