@@ -17,6 +17,7 @@ class Simulated_annealing:
         self.decay_time = max_n_iteration
         self.solution = initial_solution
         self.neigborhood = initial_solution.get_neighbours()
+        print(f"Initial Temperature {self.temp}")
 
     def solution_update(self):
         import random
