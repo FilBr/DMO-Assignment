@@ -6,7 +6,7 @@ from simulated_annealing import solution as sol
 
 class Simulated_annealing:
 
-    def __init__(self, temp, decay, max_n_iteration, initial_solution):
+    def __init__(self, max_n_iteration, initial_solution):
         import numpy as np
         self.temp = (
                             initial_solution.get_penalty() - initial_solution.avg_neighbourhood_penalty()) / 0.6931  # calculate the initial temperature
