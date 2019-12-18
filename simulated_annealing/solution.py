@@ -22,8 +22,12 @@ class Solution:
     #         self.value = 4
     #         # to do
 
-    def print_penalty(self):
+    def get_neighbours(self):
+        return self.neighbours
+
+    def get_penalty(self):
         print(f"Solution penalty is: {sum(np.diag(self.penalty_matrix))}")
+        return self.penalty_matrix
 
     def avg_neighbourhood_penalty(self):
         nbhood_percent = int(0.2 * (len(self.neighbours)))
@@ -38,6 +42,7 @@ class Solution:
             avg_penalty += curr_sol_penalty
         avg_penalty /= len(random_neighbours)
         print(f"average penalty: {avg_penalty}")
+        return  avg_penalty
 
 
     def encoding(self, adj_mat, color_dict):
@@ -105,3 +110,4 @@ class Solution:
 
     def obj_function_eval(self, distance, common_students):
         return (2**(5-distance))*common_students
+
