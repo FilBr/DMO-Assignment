@@ -3,6 +3,7 @@ from itertools import combinations
 import random
 
 class Solution:
+
     def __init__(self, time_array, adj_matrix, num_timeslots, students):
         self.time_array = time_array
         self.adj_matrix = adj_matrix
@@ -12,9 +13,12 @@ class Solution:
         self.neighbours = self.mutation_exams(self.encoding_matrix, num_timeslots, len(adj_matrix))
         self.neighbours += self.switch_exams(self.encoding_matrix, combinations(range(len(adj_matrix)), 2))
         self.penalty_matrix = self.obj_matrix(self.distance_matrix, self.adj_matrix, self.tot_num_students)
+    
+    
     # def evaluate_yourself_alone(self, ):
     #      self.value = 3
     #      # to do,
+
 
     # def evaluate_yourself_delta(self, other):
     #     if other.value == -1:
@@ -23,12 +27,15 @@ class Solution:
     #         self.value = 4
     #         # to do
 
+
     def get_neighbours(self):
         return self.neighbours
 
+
     def get_penalty(self):
         print(f"Solution penalty is: {sum(np.diag(self.penalty_matrix))}")
-        return self.penalty_matrix
+        return sum(np.diag(self.penalty_matrix))
+
 
     def avg_neighbourhood_penalty(self):
         nbhood_percent = int(0.2 * (len(self.neighbours)))
@@ -77,6 +84,7 @@ class Solution:
                 feasible_solutions.append(tmp_solution)
         return feasible_solutions
 
+
     def switch_exams(self, enc, index_pair):
         solution = np.diag(enc)
         feasible_solutions = []
@@ -95,22 +103,20 @@ class Solution:
 
     def obj_matrix(self, distance_matrix, adj_matrix, tot_students):
         n = len(distance_matrix)
-        obj_matrix = np.zeros((n, n))
+        obj_matrix = 2**(5-distance_matrix)*adj_matrix
 
         ## Each element is the penalty contribution between exam i and j, 
         ## diagonal is the sum of each row -> overall penalty contribution of an exam
 
         for pos,row in enumerate(distance_matrix):
-            for elem in range(pos+1, n):
-                if elem != 0:
-                    obj_matrix[pos][elem] = self.obj_function_eval(distance_matrix[pos][elem], adj_matrix[pos][elem])
-                    obj_matrix[elem][pos] = obj_matrix[pos][elem]
             obj_matrix[pos][pos] = np.sum(obj_matrix[pos])
 
         return obj_matrix/(tot_students*2)
 
+
     def obj_function_eval(self, distance, common_students):
         return (2**(5-distance))*common_students
 
+
     def get_random_neighbour(self):
-        return Solution(random.sample(self.neighbours, 1), self.adj_matrix, self.num_timeslots, self.tot_num_students)
+        return Solution(random.sample(self.neighbours, 1)[0], self.adj_matrix, self.num_timeslots, self.tot_num_students)

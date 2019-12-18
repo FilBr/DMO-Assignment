@@ -29,13 +29,13 @@ class Simulated_annealing:
         import random
         new_solution = self.solution.get_random_neighbour()
         delta = new_solution.get_penalty() - self.solution.get_penalty()
-        if random.uniform(-10, 0) < -delta / self.temp:
+        if random.uniform(-10, 0) < abs(delta)/ self.temp:
             self.solution = new_solution
 
     def run(self):
         self.solution_update()
         while self.counter != self.decay_time:
-            print(f"iteration {self.counter} | score {self.solution.get_penalty()}") if i % 10 else False
+            print(f"iteration {self.counter} | score {self.solution.get_penalty()}") if self.counter % 10 else False
             if self.plateau_size != self.plateau_counter:
                 self.counter += 1
                 self.plateau_counter += 1

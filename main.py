@@ -17,6 +17,7 @@ import obj_compare_and_overwrite as obj_f
 from neighborhood.mutation import mutation_exams
 from neighborhood.switch import switch_exams
 from simulated_annealing.solution import Solution
+from simulated_annealing.simulated_annealing import Simulated_annealing
 
 if __name__ == "__main__":
     for instance_number in ['01']:
@@ -46,8 +47,13 @@ if __name__ == "__main__":
             max_col = int(timeslots_file.readline())
         print(f"Number of colors used: {max_col}")
 
-        color_dict = greedy_color(G, strategy='smallest_last', interchange=True)
+        color_dict = greedy_color(G, strategy='smallest_last', interchange=True)    
         num_col = len(set(color_dict.values()))
+        first_sol = np.zeros(len(color_dict))
+        for exam in color_dict:
+            first_sol[int(exam)] = color_dict[exam]
+            
+        #print(first_sol)
 
         # if num_col > max_col:
         #     print("NUMBER OF TIMESLOTS EXCEEDED")
@@ -63,15 +69,20 @@ if __name__ == "__main__":
         # else:
         #     print(f"{best_strategy}: {best_num_col}\n\n")
 
+
+        ## Write initial solution
         with open(f"./instances/instance{instance_number}.sol", "w+") as solution_file:
             for exam in color_dict:
                 solution_file.write(f"{exam + 1} {color_dict[exam] + 1}\n")
 
-        initial_solution = Solution(color_dict, adj_mat, max_col, num_students)
-        initial_solution.get_penalty()
-        initial_solution.avg_neighbourhood_penalty()
-        neighbour = initial_solution.get_random_neighbour()
-        neighbour.get_penalty()
+        initial_solution = Solution(first_sol, adj_mat, max_col, num_students)
+        #initial_solution.get_penalty()
+        #initial_solution.avg_neighbourhood_penalty()
+        #neighbour = initial_solution.get_random_neighbour()
+        #neighbour.get_penalty()
+
+        simulated_annealing = Simulated_annealing(10, initial_solution)
+        simulated_annealing.run()
 
         # encoding_matrix, distance_matrix = encoding(adj_mat, color_dict)
         # index_pair = combinations(range(n), 2)
