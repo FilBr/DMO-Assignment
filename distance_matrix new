@@ -1,7 +1,7 @@
 def encoding(adj_mat,color_dict:)
     encoding_matrix=np.zeros((n,n))
     #matrice encoding
-    for i,mask in enumerate(adj:mat!=0):
+    for i,mask in enumerate(adj_mat!=0):
 
         ts=color_dict[i]+1
         encoding_matrix[:,i][mask]=ts
