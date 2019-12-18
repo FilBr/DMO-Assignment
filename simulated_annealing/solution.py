@@ -7,6 +7,7 @@ class Solution:
         self.time_array = time_array
         self.adj_matrix = adj_matrix
         self.tot_num_students = students
+        self.num_timeslots = num_timeslots
         self.encoding_matrix, self.distance_matrix = self.encoding(self.adj_matrix, time_array)
         self.neighbours = self.mutation_exams(self.encoding_matrix, num_timeslots, len(adj_matrix))
         self.neighbours += self.switch_exams(self.encoding_matrix, combinations(range(len(adj_matrix)), 2))
@@ -111,3 +112,5 @@ class Solution:
     def obj_function_eval(self, distance, common_students):
         return (2**(5-distance))*common_students
 
+    def get_random_neighbour(self):
+        return Solution(random.sample(self.neighbours, 1), self.adj_matrix, self.num_timeslots, self.tot_num_students)

@@ -68,8 +68,10 @@ if __name__ == "__main__":
                 solution_file.write(f"{exam + 1} {color_dict[exam] + 1}\n")
 
         initial_solution = Solution(color_dict, adj_mat, max_col, num_students)
-        initial_solution.print_penalty()
+        initial_solution.get_penalty()
         initial_solution.avg_neighbourhood_penalty()
+        neighbour = initial_solution.get_random_neighbour()
+        neighbour.get_penalty()
 
         # encoding_matrix, distance_matrix = encoding(adj_mat, color_dict)
         # index_pair = combinations(range(n), 2)
