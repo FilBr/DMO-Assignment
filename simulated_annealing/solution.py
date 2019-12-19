@@ -163,3 +163,6 @@ class Solution:
             obj_matrix[pair[0]] = distance_matrix[pair[0]] * adj_matrix[pair[0]]
             obj_matrix[:, pair[0]] = obj_matrix[pair[0]]
         return encoding_matrix, distance_matrix, obj_matrix
+    
+    def get_solution(self):
+        return self.time_array

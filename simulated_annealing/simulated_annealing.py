@@ -46,3 +46,4 @@ class Simulated_annealing:
                 self.plateau_counter = 0
                 self.temp = self.temp * self.alpha ** self.counter
         print(f"simulated annealing completed, temperature is {self.temp} and penalty is {self.solution.get_penalty()}")
+        return self.solution

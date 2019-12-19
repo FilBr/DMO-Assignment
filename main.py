@@ -80,12 +80,14 @@ if __name__ == "__main__":
         #neighbour = initial_solution.get_random_neighbour()
         #neighbour.get_penalty()
 
-<<<<<<< HEAD
         simulated_annealing = Simulated_annealing(10000, initial_solution)
-=======
         simulated_annealing = Simulated_annealing(100, initial_solution)
->>>>>>> master
-        simulated_annealing.run()
+        solution = simulated_annealing.run()
+        timeslots = solution.get_solution()
+
+        with open(f"./instances/instance{instance_number}.sol", "w+") as solution_file:
+            for exam, timeslot in enumerate(timeslots):
+                solution_file.write(f"{exam} {int(timeslot)}\n")
 
         # encoding_matrix, distance_matrix = encoding(adj_mat, color_dict)
         # index_pair = combinations(range(n), 2)
