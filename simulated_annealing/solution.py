@@ -59,17 +59,17 @@ class Solution:
         print(f"average penalty: {avg_penalty}, initial penalty: {sum(np.diag(self.penalty_matrix))}")
         return avg_penalty
 
-    def get_random_neighbour(self):
-        exam_touple = random.sample(range(1, self.n_exams +1), 2)
-        candidate_time_touple = random.sample(range(1, self.num_timeslots + 1), 2)
-        while self.time_array[exam_touple[0] -1] == candidate_time_touple[0]:
-            candidate_time_touple[0] = random.randint(1, self.num_timeslots)
-        while self.time_array[exam_touple[1] -1] == candidate_time_touple[1]:
-            candidate_time_touple[1] = random.randint(1, self.num_timeslots)
+    def get_random_neighbour(self, n_mutation):
+        # prendo a caso n mutation
+        exam_touple = random.sample(range(1, self.n_exams +1), n_mutation)
+        # candidate_time_touple = random.sample(range(1, self.num_timeslots + 1), n_mutation)
         change_list = []
-        
-        for i in range(2):
-            change_list.append([exam_touple[i], candidate_time_touple[i]])
+        for i in range(n_mutation):
+            diff = np.setdiff1d(range(1, self.num_timeslots + 1), self.encoding_matrix[i, :])
+            if len(diff)>0:
+                # prendiamo a caso un timeslot feasible
+                diff_value = random.choice(diff)
+                change_list.append([exam_touple[i], diff_value])
         
         encoding_matrix, distance_matrix, obj_matrix =  self.overwrite(self.encoding_matrix, self.distance_matrix,
                                                                        self.obj_matrix(self.distance_matrix,self.adj_matrix,self.tot_num_students), change_list, self.adj_matrix)
@@ -181,7 +181,7 @@ class Solution:
             weight = 2 ** (5 - row)
             mask = weight == 32
             weight[mask] = 0
-            obj_matrix[pair[0]] = weight * adj_matrix[pair[0]] / self.tot_num_students
+            obj_matrix[pair[0]] = weight * adj_matrix[pair[0]] / (2*self.tot_num_students)
             obj_matrix[:, pair[0]] = obj_matrix[pair[0]]
             obj_matrix[pair[0]][pair[0]] = np.sum(obj_matrix[pair[0]])
         return encoding_matrix, distance_matrix, obj_matrix

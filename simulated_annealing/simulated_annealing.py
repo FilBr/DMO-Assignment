@@ -28,14 +28,14 @@ class Simulated_annealing:
 
     def solution_update_exp(self):
         import random
-        new_solution = self.solution.get_random_neighbour()
+        new_solution = self.solution.get_random_neighbour(2)
         delta = new_solution.get_penalty() - self.solution.get_penalty()
         if random.uniform(0,1) < exp(-delta/ self.temp):
             self.solution = new_solution
 
     def run(self):
         while self.counter != self.decay_time:
-            self.solution_update()
+            self.solution_update_exp()
             if self.plateau_size != self.plateau_counter:
                 self.counter += 1
                 self.plateau_counter += 1
