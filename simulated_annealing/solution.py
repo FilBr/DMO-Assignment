@@ -159,16 +159,29 @@ class Solution:
 
     def overwrite(self, encoding_matrix, distance_matrix, obj_matrix, change_list, adj_matrix):
         for pair in change_list:
-            encoding_matrix[:, pair[0]] = pair[1]
+            # chance encoding
+            row = encoding_matrix[:, pair[0]]
+            mask = row != 0
+            row[mask] = pair[1]
+            encoding_matrix[:, pair[0]] = row
+            # print(np.diag(encoding_matrix))
+            # distance matrix
             row = encoding_matrix[pair[0]]
             row[pair[0]] = pair[1]  # sostituisce sulla diagonale
+            mask0 = row == 0
             row = abs(row - row[pair[0]])
             mask = abs(row - row[pair[0]]) > 5
             row[mask] = 0
+            row[mask0] = 0
             distance_matrix[pair[0]] = row
             distance_matrix[:, pair[0]] = row
-            obj_matrix[pair[0]] = distance_matrix[pair[0]] * adj_matrix[pair[0]]
+            # obj matrix
+            weight = 2 ** (5 - row)
+            mask = weight == 32
+            weight[mask] = 0
+            obj_matrix[pair[0]] = weight * adj_matrix[pair[0]] / self.tot_num_students
             obj_matrix[:, pair[0]] = obj_matrix[pair[0]]
+            obj_matrix[pair[0]][pair[0]] = np.sum(obj_matrix[pair[0]])
         return encoding_matrix, distance_matrix, obj_matrix
 
     def get_solution(self):
