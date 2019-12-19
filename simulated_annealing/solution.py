@@ -128,7 +128,7 @@ class Solution:
         return obj_matrix/(tot_students*2)
 
 
-    def obj_compare(self, encoding_matrix, adj_matrix, change_list, obj_matrix):
+    def obj_compare(self, encoding_matrix, adj_matrix, change_list, obj_matrix,tot_students):
         # change_list è vettore di due elementi change_list[0] = exam changed, change_list[1] = time slot
         # obj_matrix è matrice con penalità x studenti
         sum_old = 0
@@ -145,10 +145,10 @@ class Solution:
             weight = 2 ** (5 - row)
             mask = weight == 32
             weight[mask] = 0
-            sum_new += weight * adj_matri[pair[0]]
+            sum_new += weight * adj_matrix[pair[0]]
 
 
-        return sum_old - sum_new/(2*tot_stu)
+        return sum_old - sum_new/(2*tot_students)
 
 
     def overwrite(self, encoding_matrix, distance_matrix, obj_matrix, change_list, adj_matrix):
