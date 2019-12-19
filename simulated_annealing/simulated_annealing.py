@@ -35,13 +35,14 @@ class Simulated_annealing:
             self.solution = new_solution
 
     def run(self):
-        self.solution_update()
         while self.counter != self.decay_time:
-            print(f"iteration {self.counter} | score {self.solution.get_penalty()}") if self.counter % 10 else False
+            print("iterating")
+            self.solution_update()
             if self.plateau_size != self.plateau_counter:
                 self.counter += 1
                 self.plateau_counter += 1
             else:
+                print(f"iteration {self.counter} | score {self.solution.get_penalty()} | current temperature {self.temp}") if self.counter % 10 else False
                 self.plateau_counter = 0
                 self.temp = self.temp * self.alpha ** self.counter
         print(f"simulated annealing completed, temperature is {self.temp} and penalty is {self.solution.get_penalty()}")
