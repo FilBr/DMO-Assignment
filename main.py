@@ -81,7 +81,7 @@ if __name__ == "__main__":
         #neighbour = initial_solution.get_random_neighbour()
         #neighbour.get_penalty()
 
-        simulated_annealing = Simulated_annealing(100000, initial_solution)
+        simulated_annealing = Simulated_annealing(10000, initial_solution)
         simulated_annealing.run()
 
         # encoding_matrix, distance_matrix = encoding(adj_mat, color_dict)
