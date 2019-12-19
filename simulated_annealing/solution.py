@@ -5,41 +5,36 @@ import random
 
 class Solution:
 
-    def __init__(self, adj_matrix, num_timeslots, students, time_array=None, encoding=None, distance=None,
-                 objective=None,
-                 initial=False):
-        self.time_array = time_array
+    def __init__(self, adj_matrix, num_timeslots, students, 
+                time_array=None, encoding=None, distance=None, objective=None, initial=False):
+        if time_array is None and encoding is not None:
+            self.time_array = np.diag(encoding)
+        else:
+            self.time_array = time_array
         self.adj_matrix = adj_matrix
         self.tot_num_students = students
         self.num_timeslots = num_timeslots
         self.n_exams = len(adj_matrix)
 
-        if encoding == None and distance == None:
+        if encoding is None and distance is None:
             self.encoding_matrix, self.distance_matrix = self.encoding(self.adj_matrix, time_array)
         else:
             self.encoding_matrix = encoding
             self.distance_matrix = distance
 
-        if objective == None:
+        if objective is None:
             self.penalty_matrix = self.obj_matrix(self.distance_matrix, self.adj_matrix, self.tot_num_students)
         else:
             self.penalty_matrix = objective
 
-        if initial == True:
-            self.neighbours = self.mutation_exams(self.encoding_matrix, num_timeslots, len(adj_matrix))
-            self.neighbours += self.switch_exams(self.encoding_matrix, combinations(range(len(adj_matrix)), 2))
-        else:
-            # self.neighbours = self.create_random_neighbour() ##to do
+        if initial is True:
             self.neighbours = self.mutation_exams(self.encoding_matrix, num_timeslots, len(adj_matrix))
             self.neighbours += self.switch_exams(self.encoding_matrix, combinations(range(len(adj_matrix)), 2))
 
-    def create_random_neighbour(self):
-        ##to do
-        return True
-
-    def get_random_neighbour(self):
-        return Solution(random.sample(self.neighbours, 1)[0], self.adj_matrix, self.num_timeslots,
-                        self.tot_num_students)
+    
+    # def get_random_neighbour(self):
+    #     return Solution(random.sample(self.neighbours, 1)[0], self.adj_matrix, self.num_timeslots,
+    #                     self.tot_num_students)
 
     def get_neighbours(self):
         return self.neighbours
@@ -64,8 +59,8 @@ class Solution:
         print(f"average penalty: {avg_penalty}, initial penalty: {sum(np.diag(self.penalty_matrix))}")
         return avg_penalty
 
-    def get_random_solution(self):
-        exam_touple = random.sample(range(1, self.n_exams + 1), 2)
+    def get_random_neighbour(self):
+        exam_touple = random.sample(range(0, self.n_exams), 2)
         candidate_time_touple = random.sample(range(1, self.num_timeslots + 1), 2)
         while self.time_array[exam_touple[0]] == candidate_time_touple[0]:
             candidate_time_touple[0] = random.randint(1, self.n_exams)
@@ -74,8 +69,11 @@ class Solution:
         change_list = []
         for i in range(2):
             change_list.append([exam_touple[i], candidate_time_touple[i]])
+        
         encoding_matrix, distance_matrix, obj_matrix =  self.overwrite(self.encoding_matrix, self.distance_matrix,
                                                                        self.obj_matrix(self.distance_matrix,self.adj_matrix,self.tot_num_students), change_list, self.adj_matrix)
+        return Solution(self.adj_matrix, self.num_timeslots, self.tot_num_students, 
+                            encoding = encoding_matrix, distance = distance_matrix, objective = obj_matrix)
 
     def encoding(self, adj_mat, color_dict):
         n = len(adj_mat)
