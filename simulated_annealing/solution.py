@@ -112,13 +112,17 @@ class Solution:
         return feasible_solutions
 
 
+
     ## obj_matrix is a matrix nxn, where n is the number of exams
     ## each element of the matrix is the penalty calculated between exam i and j, given they have students in common
     ## The diagonal of the matrix is the penalty contribution of each exam
     
     def obj_matrix(self, distance_matrix, adj_matrix, tot_students):
         n = len(distance_matrix)
-        obj_matrix = 2**(5-distance_matrix)*adj_matrix
+        weight=2**(5-distance_matrix)
+        mask= weight==32
+        weight[mask]=0
+        obj_matrix = weight*adj_matrix
         for pos,row in enumerate(obj_matrix):
             obj_matrix[pos][pos] = np.sum(row)
         return obj_matrix/(tot_students*2)
@@ -138,9 +142,13 @@ class Solution:
             mask = abs(row - row[pair[0]]) > 5
             row[mask0] = 0
             row[mask] = 0
-            sum_new += np.sum((2**(5-row))* adj_matrix[pair[0]])
+            weight = 2 ** (5 - row)
+            mask = weight == 32
+            weight[mask] = 0
+            sum_new += weight * adj_matri[pair[0]]
 
-        return sum_old - sum_new
+
+        return sum_old - sum_new/(2*tot_stu)
 
 
     def overwrite(self, encoding_matrix, distance_matrix, obj_matrix, change_list, adj_matrix):
