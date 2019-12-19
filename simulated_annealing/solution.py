@@ -38,7 +38,7 @@ class Solution:
 
     def get_neighbours(self):
         return self.neighbours
-
+#jsuf
     def get_penalty(self):
         # print(f"Solution penalty is: {sum(np.diag(self.penalty_matrix))}")
         return sum(np.diag(self.penalty_matrix))
