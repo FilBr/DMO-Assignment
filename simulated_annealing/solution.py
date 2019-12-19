@@ -146,7 +146,7 @@ class Solution:
             mask = weight == 32
             weight[mask] = 0
             sum_new += weight * adj_matrix[pair[0]]
-
+            #clos
 
         return sum_old - sum_new/(self.tot_num_students)
 
