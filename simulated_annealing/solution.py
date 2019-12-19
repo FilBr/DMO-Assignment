@@ -63,6 +63,7 @@ class Solution:
         print(f"average penalty: {avg_penalty}, initial penalty: {sum(np.diag(self.penalty_matrix))}")
         return  avg_penalty
 
+
     def encoding(self,adj_mat, color_dict):
         n = len(adj_mat)
         encoding_matrix = np.zeros((n, n))
