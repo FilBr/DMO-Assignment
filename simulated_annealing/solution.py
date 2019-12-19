@@ -143,7 +143,7 @@ class Solution:
         sum_new = 0
         for pair in change_list:
             sum_old += obj_matrix[pair[0]][pair[0]]
-            row = encoding_matrix[pair[0]]
+            row = np.copy(encoding_matrix[pair[0]])
             row[pair[0]] = pair[1]  # sostituisce sulla diagonale
             mask0 = row == 0
             row = abs(row - row[pair[0]])
@@ -159,6 +159,7 @@ class Solution:
 
     def overwrite(self, encoding_matrix, distance_matrix, obj_matrix, change_list, adj_matrix):
         for pair in change_list:
+            pair[0] -= 1
             # chance encoding
             row = encoding_matrix[:, pair[0]]
             mask = row != 0
