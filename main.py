@@ -13,7 +13,6 @@ from initialization.mapcount import mapcount
 from initialization.encoding import encoding
 from neighborhood.mutation import mutation_exams
 from neighborhood.switch import switch_exams
-import obj_compare_and_overwrite as obj_f
 from neighborhood.mutation import mutation_exams
 from neighborhood.switch import switch_exams
 from simulated_annealing.solution import Solution
@@ -75,13 +74,17 @@ if __name__ == "__main__":
             for exam in color_dict:
                 solution_file.write(f"{exam + 1} {color_dict[exam] + 1}\n")
 
-        initial_solution = Solution(first_sol, adj_mat, max_col, num_students)
+        initial_solution = Solution(first_sol, adj_mat, max_col, num_students, initial=True)
         #initial_solution.get_penalty()
         #initial_solution.avg_neighbourhood_penalty()
         #neighbour = initial_solution.get_random_neighbour()
         #neighbour.get_penalty()
 
+<<<<<<< HEAD
         simulated_annealing = Simulated_annealing(10000, initial_solution)
+=======
+        simulated_annealing = Simulated_annealing(100, initial_solution)
+>>>>>>> master
         simulated_annealing.run()
 
         # encoding_matrix, distance_matrix = encoding(adj_mat, color_dict)

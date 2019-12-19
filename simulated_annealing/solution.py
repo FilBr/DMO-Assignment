@@ -4,28 +4,38 @@ import random
 
 class Solution:
 
-    def __init__(self, time_array, adj_matrix, num_timeslots, students):
+    def __init__(self, time_array, adj_matrix, num_timeslots, students, encoding = None, distance = None, objective = None, initial = False):
         self.time_array = time_array
         self.adj_matrix = adj_matrix
         self.tot_num_students = students
         self.num_timeslots = num_timeslots
-        self.encoding_matrix, self.distance_matrix = self.encoding(self.adj_matrix, time_array)
-        self.neighbours = self.mutation_exams(self.encoding_matrix, num_timeslots, len(adj_matrix))
-        self.neighbours += self.switch_exams(self.encoding_matrix, combinations(range(len(adj_matrix)), 2))
-        self.penalty_matrix = self.obj_matrix(self.distance_matrix, self.adj_matrix, self.tot_num_students)
-    
-    
-    # def evaluate_yourself_alone(self, ):
-    #      self.value = 3
-    #      # to do,
+        
+        if encoding == None and distance == None:
+            self.encoding_matrix, self.distance_matrix = self.encoding(self.adj_matrix, time_array)
+        else:
+            self.encoding_matrix = encoding
+            self.distance_matrix = distance
+        
+        if objective == None:
+            self.penalty_matrix = self.obj_matrix(self.distance_matrix, self.adj_matrix, self.tot_num_students)
+        else:
+            self.penalty_matrix = objective
+        
+        if initial == True:
+            self.neighbours = self.mutation_exams(self.encoding_matrix, num_timeslots, len(adj_matrix))
+            self.neighbours += self.switch_exams(self.encoding_matrix, combinations(range(len(adj_matrix)), 2))
+        else:
+            #self.neighbours = self.create_random_neighbour() ##to do
+            self.neighbours = self.mutation_exams(self.encoding_matrix, num_timeslots, len(adj_matrix))
+            self.neighbours += self.switch_exams(self.encoding_matrix, combinations(range(len(adj_matrix)), 2))
+        
+    def create_random_neighbour(self):
+        ##to do
+        return True
 
-
-    # def evaluate_yourself_delta(self, other):
-    #     if other.value == -1:
-    #         self.value = self.evaluate_yourself_alone()
-    #     else:
-    #         self.value = 4
-    #         # to do
+    
+    def get_random_neighbour(self):
+        return Solution(random.sample(self.neighbours, 1)[0], self.adj_matrix, self.num_timeslots, self.tot_num_students)
 
 
     def get_neighbours(self):
@@ -43,13 +53,14 @@ class Solution:
 
         avg_penalty = 0
         for sol in random_neighbours:
-            self.encoding_matrix, self.distance_matrix = self.encoding(self.adj_matrix, sol)
-            self.penalty_matrix = self.obj_matrix(self.distance_matrix, self.adj_matrix, self.tot_num_students)
-            curr_sol_penalty = sum(np.diag(self.penalty_matrix))
-            # print(f"penalty: {curr_sol_penalty}")
-            avg_penalty += curr_sol_penalty
-        avg_penalty /= len(random_neighbours)
-        print(f"average penalty: {avg_penalty}")
+            diff = np.where(sol != self.time_array)
+            change_list = []
+            for exam in diff[0]:
+                change_list.append([exam, sol[exam]])
+            delta = self.obj_compare(self.encoding_matrix, self.adj_matrix, change_list, self.penalty_matrix)
+            avg_penalty += self.get_penalty() + delta
+        avg_penalty /= nbhood_percent
+        print(f"average penalty: {avg_penalty}, initial penalty: {sum(np.diag(self.penalty_matrix))}")
         return  avg_penalty
 
     def encoding(self,adj_mat, color_dict):
@@ -101,22 +112,55 @@ class Solution:
         return feasible_solutions
 
 
+
+    ## obj_matrix is a matrix nxn, where n is the number of exams
+    ## each element of the matrix is the penalty calculated between exam i and j, given they have students in common
+    ## The diagonal of the matrix is the penalty contribution of each exam
+    
     def obj_matrix(self, distance_matrix, adj_matrix, tot_students):
         n = len(distance_matrix)
-        obj_matrix = 2**(5-distance_matrix)*adj_matrix
-
-        ## Each element is the penalty contribution between exam i and j, 
-        ## diagonal is the sum of each row -> overall penalty contribution of an exam
-
-        for pos,row in enumerate(distance_matrix):
-            obj_matrix[pos][pos] = np.sum(obj_matrix[pos])
-
+        weight=2**(5-distance_matrix)
+        mask= weight==32
+        weight[mask]=0
+        obj_matrix = weight*adj_matrix
+        for pos,row in enumerate(obj_matrix):
+            obj_matrix[pos][pos] = np.sum(row)
         return obj_matrix/(tot_students*2)
 
 
-    def obj_function_eval(self, distance, common_students):
-        return (2**(5-distance))*common_students
+    def obj_compare(self, encoding_matrix, adj_matrix, change_list, obj_matrix,tot_students):
+        # change_list è vettore di due elementi change_list[0] = exam changed, change_list[1] = time slot
+        # obj_matrix è matrice con penalità x studenti
+        sum_old = 0
+        sum_new = 0
+        for pair in change_list:
+            sum_old += obj_matrix[pair[0]][pair[0]]
+            row = encoding_matrix[pair[0]]
+            row[pair[0]] = pair[1]  # sostituisce sulla diagonale
+            mask0 = row == 0
+            row = abs(row - row[pair[0]])
+            mask = abs(row - row[pair[0]]) > 5
+            row[mask0] = 0
+            row[mask] = 0
+            weight = 2 ** (5 - row)
+            mask = weight == 32
+            weight[mask] = 0
+            sum_new += weight * adj_matrix[pair[0]]
 
 
-    def get_random_neighbour(self):
-        return Solution(random.sample(self.neighbours, 1)[0], self.adj_matrix, self.num_timeslots, self.tot_num_students)
+        return sum_old - sum_new/(self.tot_num_students)
+
+
+    def overwrite(self, encoding_matrix, distance_matrix, obj_matrix, change_list, adj_matrix):
+        for pair in change_list:
+            encoding_matrix[:, pair[0]] = pair[1]
+            row = encoding_matrix[pair[0]]
+            row[pair[0]] = pair[1]  # sostituisce sulla diagonale
+            row = abs(row - row[pair[0]])
+            mask = abs(row - row[pair[0]]) > 5
+            row[mask] = 0
+            distance_matrix[pair[0]] = row
+            distance_matrix[:, pair[0]] = row
+            obj_matrix[pair[0]] = distance_matrix[pair[0]] * adj_matrix[pair[0]]
+            obj_matrix[:, pair[0]] = obj_matrix[pair[0]]
+        return encoding_matrix, distance_matrix, obj_matrix
