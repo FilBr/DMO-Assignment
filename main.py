@@ -50,7 +50,7 @@ if __name__ == "__main__":
         num_col = len(set(color_dict.values()))
         first_sol = np.zeros(len(color_dict))
         for exam in color_dict:
-            first_sol[int(exam)] = color_dict[exam]
+            first_sol[int(exam)] = color_dict[exam] +1
             
         #print(first_sol)
 
