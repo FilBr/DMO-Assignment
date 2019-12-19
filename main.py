@@ -80,7 +80,7 @@ if __name__ == "__main__":
         #neighbour = initial_solution.get_random_neighbour()
         #neighbour.get_penalty()
 
-        simulated_annealing = Simulated_annealing(20, initial_solution)
+        simulated_annealing = Simulated_annealing(10000, initial_solution)
         #simulated_annealing = Simulated_annealing(100, initial_solution)
         solution = simulated_annealing.run()
         timeslots = solution.get_solution()
