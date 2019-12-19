@@ -66,4 +66,4 @@ if __name__ == "__main__":
 
         with open(f"./instances/instance{instance_number}.sol", "w+") as solution_file:
             for exam, timeslot in enumerate(timeslots):
-                solution_file.write(f"{exam} {int(timeslot)}\n")
+                solution_file.write(f"{exam+1} {int(timeslot)}\n")

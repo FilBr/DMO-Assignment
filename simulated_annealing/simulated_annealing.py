@@ -8,8 +8,7 @@ class Simulated_annealing:
 
     def __init__(self, max_n_iteration, initial_solution):
         import numpy as np
-        self.temp = abs(
-                            initial_solution.get_penalty() - initial_solution.avg_neighbourhood_penalty()) / 0.6931  # calculate the initial temperature
+        self.temp = abs(initial_solution.get_penalty() - initial_solution.avg_neighbourhood_penalty()) / 0.6931  # calculate the initial temperature
         self.counter = 0
         self.plateau_size = 10 * len(initial_solution.get_neighbours())
         self.plateau_counter = 0
