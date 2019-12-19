@@ -59,17 +59,37 @@ class Solution:
         print(f"average penalty: {avg_penalty}, initial penalty: {sum(np.diag(self.penalty_matrix))}")
         return avg_penalty
 
-    def get_random_neighbour(self, n_mutation):
-        # prendo a caso n mutation
-        exam_touple = random.sample(range(1, self.n_exams +1), n_mutation)
-        # candidate_time_touple = random.sample(range(1, self.num_timeslots + 1), n_mutation)
+
+    def get_random_neighbour(self):
+        exam_tuple = random.sample(range(1, self.n_exams +1), 2)
+        candidate_time = []
+
+        candidate_time_first_exam = np.setdiff1d(range(1, self.num_timeslots + 1), self.encoding_matrix[exam_tuple[0]-1, :])
+        if len(candidate_time_first_exam) > 0:
+            candidate_time.append(random.sample(list(candidate_time_first_exam), 1)[0])
+        else:
+            while len(candidate_time_first_exam) == 0:
+                exam_tuple[0] = random.sample(range(1, self.n_exams +1), 1)[0]
+                candidate_time_first_exam = np.setdiff1d(range(1, self.num_timeslots + 1), self.encoding_matrix[exam_tuple[0]-1, :])
+        candidate_time.append(random.sample(list(candidate_time_first_exam), 1)[0])
+
+        candidate_time_second_exam = np.setdiff1d(range(1, self.num_timeslots + 1), self.encoding_matrix[exam_tuple[1]-1, :])
+        if len(candidate_time_second_exam) > 0:
+            candidate_time.append(random.sample(list(candidate_time_second_exam), 1)[0])
+        else:
+            while len(candidate_time_second_exam) == 0:
+                exam_tuple[1] = random.sample(range(1, self.n_exams +1), 1)[0]
+                candidate_time_second_exam = np.setdiff1d(range(1, self.num_timeslots + 1), self.encoding_matrix[exam_tuple[1]-1, :])
+        candidate_time.append(random.sample(list(candidate_time_second_exam), 1)[0])
+
+        # while self.time_array[exam_touple[0] -1] == candidate_time[0]:
+        #     candidate_time[0] = random.sample(np.setdiff1d(range(1, self.num_timeslots + 1), self.encoding_matrix[exam_touple[0], :]), 1)
+        # while self.time_array[exam_touple[1] -1] == candidate_time[1]:
+        #     candidate_time[1] = random.sample(np.setdiff1d(range(1, self.num_timeslots + 1), self.encoding_matrix[exam_touple[1], :]), 1)
         change_list = []
-        for i in range(n_mutation):
-            diff = np.setdiff1d(range(1, self.num_timeslots + 1), self.encoding_matrix[i, :])
-            if len(diff)>0:
-                # prendiamo a caso un timeslot feasible
-                diff_value = random.choice(diff)
-                change_list.append([exam_touple[i], diff_value])
+        
+        for i in range(2):
+            change_list.append([exam_tuple[i], candidate_time[i]])
         
         encoding_matrix, distance_matrix, obj_matrix =  self.overwrite(self.encoding_matrix, self.distance_matrix,
                                                                        self.obj_matrix(self.distance_matrix,self.adj_matrix,self.tot_num_students), change_list, self.adj_matrix)
