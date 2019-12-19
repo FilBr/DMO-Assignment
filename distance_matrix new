@@ -1,4 +1,5 @@
 def encoding(adj_mat,color_dict:)
+    n=len(adj_mat)
     encoding_matrix=np.zeros((n,n))
     #matrice encoding
     for i,mask in enumerate(adj_mat!=0):
@@ -12,7 +13,7 @@ def encoding(adj_mat,color_dict:)
     for i,row in enumerate(encoding_matrix):
         mask0= row==0
         x=abs(row-row[i])
-        mask=abs(row-row[i])>5 
+        mask=abs(row-row[i])>5
         x[mask0]=0
         x[mask]=0
         distance_matrix[i]=x

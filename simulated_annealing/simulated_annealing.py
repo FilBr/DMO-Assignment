@@ -17,7 +17,8 @@ class Simulated_annealing:
         self.decay_time = max_n_iteration
         self.solution = initial_solution
         self.neigborhood = initial_solution.get_neighbours()
-        print(f"Initial Temperature {self.temp}")
+        #self.temp=1500
+        print(f"Initial Temperature {self.temp}, plateau size is {self.plateau_size}")
 
     def solution_update(self):
         import random
@@ -34,7 +35,7 @@ class Simulated_annealing:
             self.solution = new_solution
 
     def run(self):
-        self.solution_update_exp()
+        self.solution_update()
         while self.counter != self.decay_time:
             print(f"iteration {self.counter} | score {self.solution.get_penalty()}") if self.counter % 10 else False
             if self.plateau_size != self.plateau_counter:

@@ -33,12 +33,12 @@ class Solution:
 
 
     def get_penalty(self):
-        print(f"Solution penalty is: {sum(np.diag(self.penalty_matrix))}")
+        #print(f"Solution penalty is: {sum(np.diag(self.penalty_matrix))}")
         return sum(np.diag(self.penalty_matrix))
 
 
     def avg_neighbourhood_penalty(self):
-        nbhood_percent = int(0.2 * (len(self.neighbours)))
+        nbhood_percent = int(1 * (len(self.neighbours)))
         random_neighbours = random.sample(self.neighbours, nbhood_percent)
 
         avg_penalty = 0
@@ -52,8 +52,7 @@ class Solution:
         print(f"average penalty: {avg_penalty}")
         return  avg_penalty
 
-
-    def encoding(self, adj_mat, color_dict):
+    def encoding(self,adj_mat, color_dict):
         n = len(adj_mat)
         encoding_matrix = np.zeros((n, n))
         # matrice encoding
@@ -65,12 +64,13 @@ class Solution:
         distance_matrix = np.zeros((n, n))
         # matrice distanze
         for i, row in enumerate(encoding_matrix):
+            mask0 = row == 0
             x = abs(row - row[i])
             mask = abs(row - row[i]) > 5
+            x[mask0] = 0
             x[mask] = 0
             distance_matrix[i] = x
         return encoding_matrix, distance_matrix
-
 
     def mutation_exams(self, enc, time_slot, n_exams):
         solution = np.diag(enc)
