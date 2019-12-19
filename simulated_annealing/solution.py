@@ -60,11 +60,11 @@ class Solution:
         return avg_penalty
 
     def get_random_neighbour(self):
-        exam_touple = random.sample(range(0, self.n_exams), 2)
+        exam_touple = random.sample(range(1, self.n_exams +1), 2)
         candidate_time_touple = random.sample(range(1, self.num_timeslots + 1), 2)
-        while self.time_array[exam_touple[0]] == candidate_time_touple[0]:
+        while self.time_array[exam_touple[0] -1] == candidate_time_touple[0]:
             candidate_time_touple[0] = random.randint(1, self.n_exams)
-        while self.time_array[exam_touple[1]] == candidate_time_touple[1]:
+        while self.time_array[exam_touple[1] -1] == candidate_time_touple[1]:
             candidate_time_touple[1] = random.randint(1, self.n_exams)
         change_list = []
         for i in range(2):
