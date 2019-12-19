@@ -148,7 +148,7 @@ class Solution:
             sum_new += weight * adj_matrix[pair[0]]
 
 
-        return sum_old - sum_new/(2*tot_students)
+        return sum_old - sum_new/(tot_students)
 
 
     def overwrite(self, encoding_matrix, distance_matrix, obj_matrix, change_list, adj_matrix):
