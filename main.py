@@ -13,7 +13,6 @@ from initialization.mapcount import mapcount
 from initialization.encoding import encoding
 from neighborhood.mutation import mutation_exams
 from neighborhood.switch import switch_exams
-import obj_compare_and_overwrite as obj_f
 from neighborhood.mutation import mutation_exams
 from neighborhood.switch import switch_exams
 from simulated_annealing.solution import Solution

@@ -138,7 +138,7 @@ class Solution:
             mask = abs(row - row[pair[0]]) > 5
             row[mask0] = 0
             row[mask] = 0
-            sum_new += np.sum(row * adj_matrix[pair[0]])
+            sum_new += np.sum((2**(5-row))* adj_matrix[pair[0]])
 
         return sum_old - sum_new
 
