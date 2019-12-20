@@ -67,7 +67,7 @@ if __name__ == "__main__":
     #simulated_annealing = Simulated_annealing(100, initial_solution)
     solution = simulated_annealing.run()
     timeslots = solution.get_solution()
-
+    # prova commit
     with open(f"./instances/instance{instance_number}.sol", "w+") as solution_file:
         for exam, timeslot in enumerate(timeslots):
             solution_file.write(f"{exam+1} {int(timeslot)}\n")
