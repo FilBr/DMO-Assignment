@@ -1,5 +1,5 @@
 from math import exp
-
+import numpy as np
 
 from simulated_annealing import solution as sol
 
@@ -30,9 +30,7 @@ class Simulated_annealing:
         import random
         new_solution = self.solution.get_random_neighbour(1)
         delta = new_solution.get_penalty() - self.solution.get_penalty()
-        print(delta)
-        print(self.temp)
-        if random.uniform(0,1) < exp(-delta/self.temp):
+        if random.uniform(0,1) < np.exp(-delta/self.temp):
             self.solution = new_solution
 
     def run(self):

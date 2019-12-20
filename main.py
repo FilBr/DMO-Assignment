@@ -63,7 +63,7 @@ if __name__ == "__main__":
 
     initial_solution = Solution(adj_mat, max_col, num_students, time_array = first_sol, initial=True)
 
-    simulated_annealing = Simulated_annealing(100, initial_solution)
+    simulated_annealing = Simulated_annealing(10000, initial_solution)
     #simulated_annealing = Simulated_annealing(100, initial_solution)
     solution = simulated_annealing.run()
     timeslots = solution.get_solution()
