@@ -28,8 +28,8 @@ class Solution:
             self.penalty_matrix = objective
 
         if initial is True:
-            self.neighbours = self.mutation_exams(self.encoding_matrix, num_timeslots, len(adj_matrix))
-            self.neighbours += self.switch_exams(self.encoding_matrix, combinations(range(len(adj_matrix)), 2))
+            self.neighbours = self.mutation_exams(self.encoding_matrix, self.num_timeslots, self.n_exams)
+            self.neighbours += self.switch_exams(self.encoding_matrix, combinations(range(self.num_timeslots), 2))
 
     
     # def get_random_neighbour(self):
@@ -60,27 +60,27 @@ class Solution:
         return avg_penalty
 
 
-    def get_random_neighbour(self):
-        exam_tuple = random.sample(range(1, self.n_exams +1), 2)
+    def get_random_neighbour(self, n_mutations = 2):
+        exam_tuple = random.sample(range(1, self.n_exams +1), n_mutations)
         candidate_time = []
+        for i in range(n_mutations):
+            candidate_time_i = np.setdiff1d(range(1, self.num_timeslots + 1), self.encoding_matrix[exam_tuple[i]-1, :])
+            if len(candidate_time_i) > 0:
+                candidate_time.append(random.choice(list(candidate_time_i)))
+            else:
+                while len(candidate_time_i) == 0:
+                    exam_tuple[i] = random.sample(range(1, self.n_exams +1), 1)[0]
+                    candidate_time_i = np.setdiff1d(range(1, self.num_timeslots + 1), self.encoding_matrix[exam_tuple[0]-1, :])
+                candidate_time.append(random.choice(list(candidate_time_i)))
 
-        candidate_time_first_exam = np.setdiff1d(range(1, self.num_timeslots + 1), self.encoding_matrix[exam_tuple[0]-1, :])
-        if len(candidate_time_first_exam) > 0:
-            candidate_time.append(random.sample(list(candidate_time_first_exam), 1)[0])
-        else:
-            while len(candidate_time_first_exam) == 0:
-                exam_tuple[0] = random.sample(range(1, self.n_exams +1), 1)[0]
-                candidate_time_first_exam = np.setdiff1d(range(1, self.num_timeslots + 1), self.encoding_matrix[exam_tuple[0]-1, :])
-        candidate_time.append(random.sample(list(candidate_time_first_exam), 1)[0])
-
-        candidate_time_second_exam = np.setdiff1d(range(1, self.num_timeslots + 1), self.encoding_matrix[exam_tuple[1]-1, :])
-        if len(candidate_time_second_exam) > 0:
-            candidate_time.append(random.sample(list(candidate_time_second_exam), 1)[0])
-        else:
-            while len(candidate_time_second_exam) == 0:
-                exam_tuple[1] = random.sample(range(1, self.n_exams +1), 1)[0]
-                candidate_time_second_exam = np.setdiff1d(range(1, self.num_timeslots + 1), self.encoding_matrix[exam_tuple[1]-1, :])
-        candidate_time.append(random.sample(list(candidate_time_second_exam), 1)[0])
+        # candidate_time_second_exam = np.setdiff1d(range(1, self.num_timeslots + 1), self.encoding_matrix[exam_tuple[1]-1, :])
+        # if len(candidate_time_second_exam) > 0:
+        #     candidate_time.append(random.sample(list(candidate_time_second_exam), 1)[0])
+        # else:
+        #     while len(candidate_time_second_exam) == 0:
+        #         exam_tuple[1] = random.sample(range(1, self.n_exams +1), 1)[0]
+        #         candidate_time_second_exam = np.setdiff1d(range(1, self.num_timeslots + 1), self.encoding_matrix[exam_tuple[1]-1, :])
+        # candidate_time.append(random.sample(list(candidate_time_second_exam), 1)[0])
 
         # while self.time_array[exam_touple[0] -1] == candidate_time[0]:
         #     candidate_time[0] = random.sample(np.setdiff1d(range(1, self.num_timeslots + 1), self.encoding_matrix[exam_touple[0], :]), 1)
@@ -88,7 +88,7 @@ class Solution:
         #     candidate_time[1] = random.sample(np.setdiff1d(range(1, self.num_timeslots + 1), self.encoding_matrix[exam_touple[1], :]), 1)
         change_list = []
         
-        for i in range(2):
+        for i in range(n_mutations):
             change_list.append([exam_tuple[i], candidate_time[i]])
         
         encoding_matrix, distance_matrix, obj_matrix =  self.overwrite(self.encoding_matrix, self.distance_matrix,
@@ -163,6 +163,7 @@ class Solution:
         sum_old = 0
         sum_new = 0
         for pair in change_list:
+            pair[0] -= 1
             sum_old += obj_matrix[pair[0]][pair[0]]
             row = np.copy(encoding_matrix[pair[0]])
             row[pair[0]] = pair[1]  # sostituisce sulla diagonale

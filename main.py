@@ -8,18 +8,13 @@ from networkx.algorithms.coloring import greedy_color
 from itertools import combinations
 import random
 
-from initialization.encoding import encoding
+
 from initialization.mapcount import mapcount
-from initialization.encoding import encoding
-from neighborhood.mutation import mutation_exams
-from neighborhood.switch import switch_exams
-from neighborhood.mutation import mutation_exams
-from neighborhood.switch import switch_exams
 from simulated_annealing.solution import Solution
 from simulated_annealing.simulated_annealing import Simulated_annealing
 
 if __name__ == "__main__":
-    for instance_number in ['01']:
+    for instance_number in ['01']:#, '02', '03', '04', '05', '06', '07', '08']:
         print(f"Instance {instance_number}")
         n = mapcount(f"./instances/instance{instance_number}.exm")
         adj_mat = np.zeros(shape=(n, n), dtype=np.int16)
@@ -54,8 +49,8 @@ if __name__ == "__main__":
 
         ## Write initial solution
         with open(f"./instances/initial_instance{instance_number}.sol", "w+") as solution_file:
-            for exam in color_dict:
-                solution_file.write(f"{exam + 1} {color_dict[exam] + 1}\n")
+            for exam,timeslot in enumerate(first_sol):
+                solution_file.write(f"{exam + 1} {int(first_sol[exam])}\n")
 
         initial_solution = Solution(adj_mat, max_col, num_students, time_array = first_sol, initial=True)
 

@@ -1,6 +1,5 @@
 from math import exp
 
-from initialization.encoding import encoding
 from simulated_annealing import solution as sol
 
 
@@ -21,14 +20,14 @@ class Simulated_annealing:
 
     def solution_update(self):
         import random
-        new_solution = self.solution.get_random_neighbour()
+        new_solution = self.solution.get_random_neighbour(n_mutations=3)
         delta = new_solution.get_penalty() - self.solution.get_penalty()
         if random.uniform(-10, 0) < -delta / self.temp:
             self.solution = new_solution
 
     def solution_update_exp(self):
         import random
-        new_solution = self.solution.get_random_neighbour(2)
+        new_solution = self.solution.get_random_neighbour(n_mutations=3)
         delta = new_solution.get_penalty() - self.solution.get_penalty()
         if random.uniform(0,1) < exp(-delta/ self.temp):
             self.solution = new_solution
