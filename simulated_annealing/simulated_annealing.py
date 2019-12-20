@@ -1,6 +1,6 @@
 from math import exp
 
-from initialization.encoding import encoding
+
 from simulated_annealing import solution as sol
 
 
@@ -21,7 +21,7 @@ class Simulated_annealing:
 
     def solution_update(self):
         import random
-        new_solution = self.solution.get_random_neighbour()
+        new_solution = self.solution.get_random_neighbour(1)
         delta = new_solution.get_penalty() - self.solution.get_penalty()
         if random.uniform(-10, 0) < -delta / self.temp:
             self.solution = new_solution
@@ -30,11 +30,13 @@ class Simulated_annealing:
         import random
         new_solution = self.solution.get_random_neighbour(1)
         delta = new_solution.get_penalty() - self.solution.get_penalty()
-        if random.uniform(0,1) < exp(-delta/ self.temp):
+        print(delta)
+        print(self.temp)
+        if random.uniform(0,1) < exp(-delta/self.temp):
             self.solution = new_solution
 
     def run(self):
-        while self.counter != self.decay_time:
+        while self.counter != self.decay_time and self.temp > 0:
             self.solution_update_exp()
             if self.plateau_size != self.plateau_counter:
                 self.counter += 1

@@ -28,13 +28,9 @@ class Solution:
             self.penalty_matrix = objective
 
         if initial is True:
-            self.neighbours = self.mutation_exams(self.encoding_matrix, num_timeslots, len(adj_matrix))
-            self.neighbours += self.switch_exams(self.encoding_matrix, combinations(range(len(adj_matrix)), 2))
+            self.neighbours = self.mutation_exams(self.encoding_matrix, self.num_timeslots, self.n_exams)
+            self.neighbours += self.switch_exams(self.encoding_matrix, combinations(range(self.num_timeslots), 2))
 
-    
-    # def get_random_neighbour(self):
-    #     return Solution(random.sample(self.neighbours, 1)[0], self.adj_matrix, self.num_timeslots,
-    #                     self.tot_num_students)
 
     def get_neighbours(self):
         return self.neighbours
@@ -60,17 +56,22 @@ class Solution:
         return avg_penalty
 
     def get_random_neighbour(self, n_mutation):
+        # VA BENE PER n_mutation=1, PER NUMERI MAGGIORI INSERIRE CHECK SU MATRICE DI ADIACENZA
         # prendo a caso n mutation
         exam_touple = random.sample(range(1, self.n_exams +1), n_mutation)
         # candidate_time_touple = random.sample(range(1, self.num_timeslots + 1), n_mutation)
         change_list = []
         for i in range(n_mutation):
-            diff = np.setdiff1d(range(1, self.num_timeslots + 1), self.encoding_matrix[i, :])
-            if len(diff)>0:
-                # prendiamo a caso un timeslot feasible
-                diff_value = random.choice(diff)
-                change_list.append([exam_touple[i], diff_value])
-        
+            diff = np.setdiff1d(range(1, self.num_timeslots + 1), self.encoding_matrix[exam_touple[i]-1, :])
+            check_exam=np.zeros(self.n_exams)
+            while len(diff) == 0:
+                # AGGIUNGERE CHECK PER EVITARE CICLI INFINITI SU ESAMI, NEL CASO LA SOLUZIONE CORRENTE NON ABBIA VICINI
+                # OPPURE CICLI TROPPO LUNGHI
+                exam_touple = random.sample(range(1, self.n_exams + 1), n_mutation)
+                diff = np.setdiff1d(range(1, self.num_timeslots + 1), self.encoding_matrix[exam_touple[i]-1, :])
+            # prendiamo a caso un timeslot feasible
+            diff_value = random.choice(diff)
+            change_list.append([exam_touple[i], diff_value])
         encoding_matrix, distance_matrix, obj_matrix = self.overwrite(self.encoding_matrix, self.distance_matrix,
                                                                        self.obj_matrix(self.distance_matrix,self.adj_matrix,self.tot_num_students), change_list, self.adj_matrix)
         return Solution(self.adj_matrix, self.num_timeslots, self.tot_num_students, 
