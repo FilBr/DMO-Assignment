@@ -35,7 +35,7 @@ class Simulated_annealing:
 
     def run(self):
         while self.counter != self.decay_time and self.temp > 0:
-            self.solution_update_exp()
+            self.solution_update()
             if self.plateau_size != self.plateau_counter:
                 self.counter += 1
                 self.plateau_counter += 1
