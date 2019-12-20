@@ -28,7 +28,7 @@ class Simulated_annealing:
 
     def solution_update_exp(self):
         import random
-        new_solution = self.solution.get_random_neighbour(2)
+        new_solution = self.solution.get_random_neighbour(1)
         delta = new_solution.get_penalty() - self.solution.get_penalty()
         if random.uniform(0,1) < exp(-delta/ self.temp):
             self.solution = new_solution
