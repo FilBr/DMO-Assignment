@@ -71,7 +71,7 @@ class Solution:
                 diff_value = random.choice(diff)
                 change_list.append([exam_touple[i], diff_value])
         
-        encoding_matrix, distance_matrix, obj_matrix =  self.overwrite(self.encoding_matrix, self.distance_matrix,
+        encoding_matrix, distance_matrix, obj_matrix = self.overwrite(self.encoding_matrix, self.distance_matrix,
                                                                        self.obj_matrix(self.distance_matrix,self.adj_matrix,self.tot_num_students), change_list, self.adj_matrix)
         return Solution(self.adj_matrix, self.num_timeslots, self.tot_num_students, 
                             encoding = encoding_matrix, distance = distance_matrix, objective = obj_matrix)
@@ -162,13 +162,13 @@ class Solution:
         for pair in change_list:
             pair[0] -= 1
             # chance encoding
-            row = encoding_matrix[:, pair[0]]
-            mask = row != 0
-            row[mask] = pair[1]
-            encoding_matrix[:, pair[0]] = row
+            column = np.copy(encoding_matrix[:, pair[0]])
+            mask = column != 0
+            column[mask] = pair[1]
+            encoding_matrix[:, pair[0]] = column
             # print(np.diag(encoding_matrix))
             # distance matrix
-            row = encoding_matrix[pair[0]]
+            row = np.copy(encoding_matrix[pair[0]])
             row[pair[0]] = pair[1]  # sostituisce sulla diagonale
             mask0 = row == 0
             row = abs(row - row[pair[0]])
