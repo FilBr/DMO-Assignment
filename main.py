@@ -17,7 +17,7 @@ from neighborhood.mutation import mutation_exams
 from neighborhood.switch import switch_exams
 from simulated_annealing.solution import Solution
 from simulated_annealing.simulated_annealing import Simulated_annealing
-### prova adi
+
 if __name__ == "__main__":
     for instance_number in ['01']:
         print(f"Instance {instance_number}")
@@ -42,28 +42,32 @@ if __name__ == "__main__":
                 adj_mat[pair[1] - 1, pair[0] - 1] += 1
         G = nx.from_numpy_matrix(adj_mat)
 
-        with open(f"./instances/instance{instance_number}.slo", "r") as timeslots_file:
-            max_col = int(timeslots_file.readline())
-        print(f"Number of colors used: {max_col}")
+    # adj_mat=np.array([[0,1,0,2,6],[1,0,5,2,0],[0,5,0,10,0],[2,2,10,0,7],[6,0,0,7,0]])
+    #
+    # num_students=70
+    G = nx.from_numpy_matrix(adj_mat)
+    with open(f"./instances/instance{instance_number}.slo", "r") as timeslots_file:
+        max_col = int(timeslots_file.readline())
+    print(f"Number of colors used: {max_col}")
 
-        color_dict = greedy_color(G, strategy='smallest_last', interchange=True)    
-        num_col = len(set(color_dict.values()))
-        first_sol = np.zeros(len(color_dict))
+    color_dict = greedy_color(G, strategy='smallest_last', interchange=True)
+    num_col = len(set(color_dict.values()))
+    first_sol = np.zeros(len(color_dict))
+    for exam in color_dict:
+        first_sol[int(exam)] = color_dict[exam] +1
+
+    # Write initial solution
+    with open(f"./instances/instance{instance_number}.sol", "w+") as solution_file:
         for exam in color_dict:
-            first_sol[int(exam)] = color_dict[exam] +1
+            solution_file.write(f"{exam + 1} {color_dict[exam] + 1}\n")
 
-        ## Write initial solution
-        with open(f"./instances/instance{instance_number}.sol", "w+") as solution_file:
-            for exam in color_dict:
-                solution_file.write(f"{exam + 1} {color_dict[exam] + 1}\n")
+    initial_solution = Solution(adj_mat, max_col, num_students, time_array = first_sol, initial=True)
 
-        initial_solution = Solution(adj_mat, max_col, num_students, time_array = first_sol, initial=True)
+    simulated_annealing = Simulated_annealing(1000, initial_solution)
+    #simulated_annealing = Simulated_annealing(100, initial_solution)
+    solution = simulated_annealing.run()
+    timeslots = solution.get_solution()
 
-        simulated_annealing = Simulated_annealing(10000, initial_solution)
-        #simulated_annealing = Simulated_annealing(100, initial_solution)
-        solution = simulated_annealing.run()
-        timeslots = solution.get_solution()
-
-        with open(f"./instances/instance{instance_number}.sol", "w+") as solution_file:
-            for exam, timeslot in enumerate(timeslots):
-                solution_file.write(f"{exam+1} {int(timeslot)}\n")
+    with open(f"./instances/instance{instance_number}.sol", "w+") as solution_file:
+        for exam, timeslot in enumerate(timeslots):
+            solution_file.write(f"{exam+1} {int(timeslot)}\n")
