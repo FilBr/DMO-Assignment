@@ -28,17 +28,13 @@ class Solution:
             self.penalty_matrix = objective
 
         if initial is True:
-            self.neighbours = self.mutation_exams(self.encoding_matrix, num_timeslots, len(adj_matrix))
-            self.neighbours += self.switch_exams(self.encoding_matrix, combinations(range(len(adj_matrix)), 2))
+            self.neighbours = self.mutation_exams(self.encoding_matrix, self.num_timeslots, self.n_exams)
+            self.neighbours += self.switch_exams(self.encoding_matrix, combinations(range(self.num_timeslots), 2))
 
-    
-    # def get_random_neighbour(self):
-    #     return Solution(random.sample(self.neighbours, 1)[0], self.adj_matrix, self.num_timeslots,
-    #                     self.tot_num_students)
 
     def get_neighbours(self):
         return self.neighbours
-
+#jsuf
     def get_penalty(self):
         # print(f"Solution penalty is: {sum(np.diag(self.penalty_matrix))}")
         return sum(np.diag(self.penalty_matrix))
@@ -59,18 +55,24 @@ class Solution:
         print(f"average penalty: {avg_penalty}, initial penalty: {sum(np.diag(self.penalty_matrix))}")
         return avg_penalty
 
-    def get_random_neighbour(self):
-        exam_touple = random.sample(range(0, self.n_exams), 2)
-        candidate_time_touple = random.sample(range(1, self.num_timeslots + 1), 2)
-        while self.time_array[exam_touple[0]] == candidate_time_touple[0]:
-            candidate_time_touple[0] = random.randint(1, self.n_exams)
-        while self.time_array[exam_touple[1]] == candidate_time_touple[1]:
-            candidate_time_touple[1] = random.randint(1, self.n_exams)
+    def get_random_neighbour(self, n_mutation):
+        # VA BENE PER n_mutation=1, PER NUMERI MAGGIORI INSERIRE CHECK SU MATRICE DI ADIACENZA
+        # prendo a caso n mutation
+        exam_touple = random.sample(range(1, self.n_exams +1), n_mutation)
+        # candidate_time_touple = random.sample(range(1, self.num_timeslots + 1), n_mutation)
         change_list = []
-        for i in range(2):
-            change_list.append([exam_touple[i], candidate_time_touple[i]])
-        
-        encoding_matrix, distance_matrix, obj_matrix =  self.overwrite(self.encoding_matrix, self.distance_matrix,
+        for i in range(n_mutation):
+            diff = np.setdiff1d(range(1, self.num_timeslots + 1), self.encoding_matrix[exam_touple[i]-1, :])
+            check_exam=np.zeros(self.n_exams)
+            while len(diff) == 0:
+                # AGGIUNGERE CHECK PER EVITARE CICLI INFINITI SU ESAMI, NEL CASO LA SOLUZIONE CORRENTE NON ABBIA VICINI
+                # OPPURE CICLI TROPPO LUNGHI
+                exam_touple = random.sample(range(1, self.n_exams + 1), n_mutation)
+                diff = np.setdiff1d(range(1, self.num_timeslots + 1), self.encoding_matrix[exam_touple[i]-1, :])
+            # prendiamo a caso un timeslot feasible
+            diff_value = random.choice(diff)
+            change_list.append([exam_touple[i], diff_value])
+        encoding_matrix, distance_matrix, obj_matrix = self.overwrite(self.encoding_matrix, self.distance_matrix,
                                                                        self.obj_matrix(self.distance_matrix,self.adj_matrix,self.tot_num_students), change_list, self.adj_matrix)
         return Solution(self.adj_matrix, self.num_timeslots, self.tot_num_students, 
                             encoding = encoding_matrix, distance = distance_matrix, objective = obj_matrix)
@@ -143,7 +145,7 @@ class Solution:
         sum_new = 0
         for pair in change_list:
             sum_old += obj_matrix[pair[0]][pair[0]]
-            row = encoding_matrix[pair[0]]
+            row = np.copy(encoding_matrix[pair[0]])
             row[pair[0]] = pair[1]  # sostituisce sulla diagonale
             mask0 = row == 0
             row = abs(row - row[pair[0]])
@@ -159,16 +161,30 @@ class Solution:
 
     def overwrite(self, encoding_matrix, distance_matrix, obj_matrix, change_list, adj_matrix):
         for pair in change_list:
-            encoding_matrix[:, pair[0]] = pair[1]
-            row = encoding_matrix[pair[0]]
+            pair[0] -= 1
+            # chance encoding
+            column = np.copy(encoding_matrix[:, pair[0]])
+            mask = column != 0
+            column[mask] = pair[1]
+            encoding_matrix[:, pair[0]] = column
+            # print(np.diag(encoding_matrix))
+            # distance matrix
+            row = np.copy(encoding_matrix[pair[0]])
             row[pair[0]] = pair[1]  # sostituisce sulla diagonale
+            mask0 = row == 0
             row = abs(row - row[pair[0]])
             mask = abs(row - row[pair[0]]) > 5
             row[mask] = 0
+            row[mask0] = 0
             distance_matrix[pair[0]] = row
             distance_matrix[:, pair[0]] = row
-            obj_matrix[pair[0]] = distance_matrix[pair[0]] * adj_matrix[pair[0]]
+            # obj matrix
+            weight = 2 ** (5 - row)
+            mask = weight == 32
+            weight[mask] = 0
+            obj_matrix[pair[0]] = weight * adj_matrix[pair[0]] / (2*self.tot_num_students)
             obj_matrix[:, pair[0]] = obj_matrix[pair[0]]
+            obj_matrix[pair[0]][pair[0]] = np.sum(obj_matrix[pair[0]])
         return encoding_matrix, distance_matrix, obj_matrix
 
     def get_solution(self):
