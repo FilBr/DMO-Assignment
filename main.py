@@ -8,7 +8,6 @@ from networkx.algorithms.coloring import greedy_color
 from itertools import combinations
 import random
 
-
 from initialization.mapcount import mapcount
 from initialization.encoding import encoding
 from neighborhood.mutation import mutation_exams
@@ -19,7 +18,7 @@ from simulated_annealing.solution import Solution
 from simulated_annealing.simulated_annealing import Simulated_annealing
 
 if __name__ == "__main__":
-    for instance_number in ['01']:
+    for instance_number in ['04']:
         print(f"Instance {instance_number}")
         n = mapcount(f"./instances/instance{instance_number}.exm")
         adj_mat = np.zeros(shape=(n, n), dtype=np.int16)
@@ -63,7 +62,7 @@ if __name__ == "__main__":
 
     initial_solution = Solution(adj_mat, max_col, num_students, time_array = first_sol, initial=True)
 
-    simulated_annealing = Simulated_annealing(10000, initial_solution)
+    simulated_annealing = Simulated_annealing(100000, initial_solution)
     #simulated_annealing = Simulated_annealing(100, initial_solution)
     solution = simulated_annealing.run()
     timeslots = solution.get_solution()
