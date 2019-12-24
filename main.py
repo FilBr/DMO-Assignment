@@ -65,7 +65,7 @@ if __name__ == "__main__":
 
     simulated_annealing = Simulated_annealing(10000, initial_solution)
     #simulated_annealing = Simulated_annealing(100, initial_solution)
-    solution = simulated_annealing.run()
+    solution = simulated_annealing.run(n)
     timeslots = solution.get_solution()
     # prova commit
     with open(f"./instances/instance{instance_number}.sol", "w+") as solution_file:

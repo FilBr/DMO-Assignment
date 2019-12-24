@@ -19,27 +19,41 @@ class Simulated_annealing:
         #self.temp=15000
         print(f"Initial Temperature {self.temp}, plateau size is {self.plateau_size}")
 
-    def solution_update(self):
+    def solution_update(self,num_mutation):
         import random
-        new_solution = self.solution.get_random_neighbour(1)
-        delta = new_solution.get_penalty() - self.solution.get_penalty()
+        neighbourhood=[]
+        delta_neighbourhood=[]
+        # create a neighboorhood for local search -> fixed size=5, because otherwise it will take too long time
+        for i in range(5):
+            new_solution = self.solution.get_random_neighbour(num_mutation)
+            neighbourhood.append(new_solution)
+            delta = new_solution.get_penalty() - self.solution.get_penalty()
+            delta_neighbourhood.append(delta)
+        # select the best neighbourhood: the one that mostly improves the objective function
+        index=delta_neighbourhood.index(min(delta_neighbourhood))
+        new_solution=neighbourhood[index]
+        delta=delta_neighbourhood[index]
+
         if random.uniform(-10, 0) < -delta / self.temp:
             self.solution = new_solution
 
-    def solution_update_exp(self):
+    def solution_update_exp(self,num_mutation):
         import random
-        new_solution = self.solution.get_random_neighbour(1)
+        new_solution = self.solution.get_random_neighbour(num_mutation)
         delta = new_solution.get_penalty() - self.solution.get_penalty()
         if random.uniform(0,1) < np.exp(-delta/self.temp):
             self.solution = new_solution
 
-    def run(self):
+    def run(self,num_exams):
+        # number of mutation for neighbours that scales with number of exams
+        num_mutation =round(num_exams/2)
         while self.counter != self.decay_time and self.temp > 0:
-            self.solution_update()
+            self.solution_update(num_mutation)
             if self.plateau_size != self.plateau_counter:
                 self.counter += 1
                 self.plateau_counter += 1
             else:
+                num_mutation = round(num_mutation / 2)
                 print(
                     f"iteration {self.counter} | score {self.solution.get_penalty()} | current temperature {self.temp}")
                 self.plateau_counter = 0

@@ -59,19 +59,24 @@ class Solution:
         # VA BENE PER n_mutation=1, PER NUMERI MAGGIORI INSERIRE CHECK SU MATRICE DI ADIACENZA
         # prendo a caso n mutation
         exam_touple = random.sample(range(1, self.n_exams +1), n_mutation)
-        # candidate_time_touple = random.sample(range(1, self.num_timeslots + 1), n_mutation)
         change_list = []
+        enc_matrix=np.copy(self.encoding_matrix)
+        available_timeslots=range(1, self.num_timeslots + 1)
         for i in range(n_mutation):
-            diff = np.setdiff1d(range(1, self.num_timeslots + 1), self.encoding_matrix[exam_touple[i]-1, :])
-            check_exam=np.zeros(self.n_exams)
-            while len(diff) == 0:
-                # AGGIUNGERE CHECK PER EVITARE CICLI INFINITI SU ESAMI, NEL CASO LA SOLUZIONE CORRENTE NON ABBIA VICINI
-                # OPPURE CICLI TROPPO LUNGHI
-                exam_touple = random.sample(range(1, self.n_exams + 1), n_mutation)
-                diff = np.setdiff1d(range(1, self.num_timeslots + 1), self.encoding_matrix[exam_touple[i]-1, :])
+            diff = np.setdiff1d(available_timeslots, enc_matrix[exam_touple[i]-1, :])
+            # while len(diff) == 0:
+            #     # AGGIUNGERE CHECK PER EVITARE CICLI INFINITI SU ESAMI, NEL CASO LA SOLUZIONE CORRENTE NON ABBIA VICINI
+            #     # OPPURE CICLI TROPPO LUNGHI
+            #     exam_touple = random.sample(range(1, self.n_exams + 1), n_mutation)
+            #     diff = np.setdiff1d(range(1, self.num_timeslots + 1), adj_matrix[exam_touple[i]-1, :])
             # prendiamo a caso un timeslot feasible
-            diff_value = random.choice(diff)
-            change_list.append([exam_touple[i], diff_value])
+            if len(diff)!=0:
+                diff_value = random.choice(diff)
+                column = np.copy(enc_matrix[:,exam_touple[i]-1])
+                mask = column != 0
+                column[mask] = diff_value
+                enc_matrix[:, exam_touple[i]-1] = column
+                change_list.append([exam_touple[i], diff_value])
         encoding_matrix, distance_matrix, obj_matrix = self.overwrite(self.encoding_matrix, self.distance_matrix,
                                                                        self.obj_matrix(self.distance_matrix,self.adj_matrix,self.tot_num_students), change_list, self.adj_matrix)
         return Solution(self.adj_matrix, self.num_timeslots, self.tot_num_students, 
