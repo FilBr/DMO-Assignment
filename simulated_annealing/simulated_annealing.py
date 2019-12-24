@@ -26,7 +26,7 @@ class Simulated_annealing:
         neighbourhood=[]
         delta_neighbourhood=[]
         # create a neighboorhood for local search -> fixed size=5, because otherwise it will take too long time
-        for i in range(3):
+        for i in range(5):
             new_solution = self.solution.get_random_neighbour(num_mutation)
             neighbourhood.append(new_solution)
             delta = new_solution.get_penalty() - self.solution.get_penalty()

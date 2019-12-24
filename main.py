@@ -18,7 +18,7 @@ from simulated_annealing.solution import Solution
 from simulated_annealing.simulated_annealing import Simulated_annealing
 
 if __name__ == "__main__":
-    for instance_number in ['04']:
+    for instance_number in ['01']:
         print(f"Instance {instance_number}")
         n = mapcount(f"./instances/instance{instance_number}.exm")
         adj_mat = np.zeros(shape=(n, n), dtype=np.int16)
