@@ -56,14 +56,15 @@ class Solution:
         return avg_penalty
 
     def get_random_neighbour(self, n_mutation):
-        # VA BENE PER n_mutation=1, PER NUMERI MAGGIORI INSERIRE CHECK SU MATRICE DI ADIACENZA
-        # prendo a caso n mutation
-        exam_touple = random.sample(range(1, self.n_exams +1), n_mutation)
+        penalty_for_exams = np.diag(self.penalty_matrix)
+        # selct index of exams that bring the n_mutations largest penalties
+        exam_try_mutate=(-penalty_for_exams).argsort()[:n_mutation]
+        #exam_touple = random.sample(range(1, self.n_exams +1), n_mutation)
         change_list = []
         enc_matrix=np.copy(self.encoding_matrix)
         available_timeslots=range(1, self.num_timeslots + 1)
         for i in range(n_mutation):
-            diff = np.setdiff1d(available_timeslots, enc_matrix[exam_touple[i]-1, :])
+            diff = np.setdiff1d(available_timeslots, enc_matrix[exam_try_mutate[i], :])
             # while len(diff) == 0:
             #     # AGGIUNGERE CHECK PER EVITARE CICLI INFINITI SU ESAMI, NEL CASO LA SOLUZIONE CORRENTE NON ABBIA VICINI
             #     # OPPURE CICLI TROPPO LUNGHI
@@ -72,11 +73,11 @@ class Solution:
             # prendiamo a caso un timeslot feasible
             if len(diff)!=0:
                 diff_value = random.choice(diff)
-                column = np.copy(enc_matrix[:,exam_touple[i]-1])
+                column = np.copy(enc_matrix[:,exam_try_mutate[i]])
                 mask = column != 0
                 column[mask] = diff_value
-                enc_matrix[:, exam_touple[i]-1] = column
-                change_list.append([exam_touple[i], diff_value])
+                enc_matrix[:, exam_try_mutate[i]] = column
+                change_list.append([exam_try_mutate[i]+1, diff_value])
         encoding_matrix, distance_matrix, obj_matrix = self.overwrite(self.encoding_matrix, self.distance_matrix,
                                                                        self.obj_matrix(self.distance_matrix,self.adj_matrix,self.tot_num_students), change_list, self.adj_matrix)
         return Solution(self.adj_matrix, self.num_timeslots, self.tot_num_students, 
